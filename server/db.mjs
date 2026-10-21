@@ -18,7 +18,9 @@ export async function openDatabase(options = {}) {
       max: 5,
       ssl:
         process.env.DATABASE_SSL === "true"
-          ? { rejectUnauthorized: true }
+          ? { rejectUnauthorized: true, 
+            ca: process.env.DATABASE_CA_CERT?.replace(/\\n/g, "\n"),
+          }
           : undefined,
     });
   } else {
