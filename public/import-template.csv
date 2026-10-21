@@ -1,0 +1,2 @@
+sku,slug,name,category,brand,size,price,wholesale_price,wholesale_min,image,description,visible
+LP-EXAMPLE,example-product,Example product,Whiskey,Example brand,70cl,25000,22000,6,/placeholder.svg,Replace with your own product description,0

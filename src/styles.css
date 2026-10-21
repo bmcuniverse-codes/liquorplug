@@ -1,0 +1,59 @@
+@import url("./theme.css");
+
+.hero-packshot {
+  position: absolute;
+  bottom: 12px;
+  height: 85%;
+  width: 50%;
+  object-fit: contain;
+  filter: drop-shadow(18px 22px 20px #0008);
+}
+.packshot-one {
+  left: -5%;
+  height: 80%;
+  transform: rotate(-8deg);
+}
+.packshot-two {
+  left: 25%;
+  height: 93%;
+  z-index: 2;
+  transform: rotate(4deg);
+}
+.packshot-three {
+  left: 56%;
+  height: 81%;
+  transform: rotate(12deg);
+}
+@media (max-width: 760px) {
+  .hero-main .hero-packshot {
+    bottom: -4px;
+    height: 90%;
+    width: 55%;
+  }
+  .hero-main .packshot-one {
+    height: 84%;
+    left: -10%;
+  }
+  .hero-main .packshot-two {
+    height: 100%;
+    left: 20%;
+  }
+  .hero-main .packshot-three {
+    height: 86%;
+    left: 55%;
+  }
+}
+.private-token {
+  margin-top: 22px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.private-token summary {
+  cursor: pointer;
+}
+.private-token code {
+  display: block;
+  overflow-wrap: anywhere;
+  padding: 12px;
+  background: #fff8;
+}
