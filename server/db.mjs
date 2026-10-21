@@ -16,12 +16,13 @@ export async function openDatabase(options = {}) {
     pool = new pg.Pool({
       connectionString: url,
       max: 5,
-      ssl:
-        process.env.DATABASE_SSL === "true"
-          ? { rejectUnauthorized: true, 
-            ca: process.env.DATABASE_CA_CERT?.replace(/\\n/g, "\n"),
+    ssl:
+      process.env.DATABASE_SSL === "true"
+        ? {
+            rejectUnauthorized: true,
+            ca: process.env.DATABASE_CA_CERT,
           }
-          : undefined,
+        : undefined,
     });
   } else {
     const { DatabaseSync } = await import("node:sqlite");
