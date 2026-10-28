@@ -5,11 +5,22 @@
 - Responsive black/burgundy storefront; mobile search/navigation, two-column product cards on phones, single-column checkout and contained scrolling admin tables.
 - Editable per-page banner carousels, desktop/mobile images, slide schedules, pause/previous/next controls and reduced-motion support.
 - Predefined homepage sections with editable headings, visibility and ordering.
-- Product catalogue: search, category, brand, size, price range, availability, featured/price/newest/name/bestseller sorting and pagination.
+- Product catalogue: search, category, brand, size, price range, availability, featured/price/newest/name/bestseller sorting and progressive 20-product loading with automatic scroll loading, retry, a Load more fallback and a pause control to reach the footer.
 - Product pages, image galleries, related products, retail/scheduled-sale prices and stock indicators.
 - Shopping bag, guest retail checkout, customer registration/login, password reset through configured email, account order history.
 - Editable contact information, store policies, footer/header links, social links, colour/typography/logo settings and page copy.
 - Age confirmation plus explicit adult confirmation at checkout.
+
+## Added in this update
+
+- Supplied campaign artwork with automatic rightward carousel transitions and editable Shop now links; image preparation before transitions.
+- Promotional banner breaks after each 20 shop products.
+- Ten social platforms, including TikTok, with individual enable switches and top/bottom placement controls.
+- Editable drink discovery, cocktail/mocktail notes and advertising enquiry sections.
+- Editable portrait and landscape footer banners plus “Why buy from Liquor Plug NG?” cards.
+- One-time opening-stock minimum of 10 for existing active products, movement history and a confirmed manager restock button.
+- Installable PWA metadata/icons, browser install control, iPhone instructions and an offline reconnect page. Sensitive responses are excluded from service-worker caching.
+- Private system checks and safe server error references; stricter database/TLS/storage configuration handling and concurrent-startup migration protection.
 
 ## Wholesale
 
@@ -58,7 +69,7 @@
 | Included | Needs your input before live selling |
 | --- | --- |
 | Catalogue and reference prices | Verify your actual retail prices, stock and product data |
-| Manufacturer photos for 23 entries | Upload remaining images and check bottle-size variants |
+| Manufacturer photos for 52 entries | Upload remaining images and check bottle-size variants |
 | Wholesale workflow | Set wholesale prices/minimums and approve applicants |
 | Lagos delivery configuration | Set fees/ETAs and enable serviceable areas |
 | Paystack integration code | Add your keys, configure webhook and complete a test payment |

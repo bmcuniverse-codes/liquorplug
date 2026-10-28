@@ -94,7 +94,9 @@ const post = (agent, path, csrf, b) =>
     .send(b);
 before(async () => {
   dir = await mkdtemp(join(tmpdir(), "liquor-plug-test-"));
-  db = await openDatabase({ url: "", path: join(dir, "test.sqlite") });
+  db = process.env.LP_TEST_POSTGRES === "1"
+    ? await (await import("./helpers/postgres.mjs")).openPostgresTestDatabase()
+    : await openDatabase({ url: "", path: join(dir, "test.sqlite") });
   await migrate(db);
   await seed(db, { ownerEmail: "owner@example.test", ownerPassword: password });
   app = createApp(db);
@@ -134,7 +136,7 @@ test("catalogue contains all 532 products and 20 delivery LGAs", async () => {
   assert.equal(new Set(b.body.zones.map((z) => z.lga)).size, 20);
   assert.ok(b.body.zones.every((z) => z.enabled === 0));
   assert.equal(b.body.settings.whatsapp, "2348062833017");
-  assert.ok(r.body.products.every((p) => p.stock === 0));
+  assert.ok(r.body.products.every((p) => p.stock === 10));
 });
 test("retail and anonymous API never expose wholesale prices", async () => {
   const p = await product();
@@ -807,7 +809,7 @@ test("customer editing does not allow escalation of account permissions", async 
   assert.equal(saved.name, "Updated Customer");
   assert.equal(saved.role, "customer");
 });
-test("SQLite backup is consistent and readable", async () => {
+test("SQLite backup is consistent and readable", {skip:process.env.LP_TEST_POSTGRES==="1"}, async () => {
   const backup = join(dir, "backup.sqlite");
   await db.query("VACUUM INTO ?", [backup]);
   const copy = await openDatabase({ url: "", path: backup });
@@ -824,4 +826,44 @@ test("checkout rate limit blocks repeated submissions", async () => {
   for (let i = 0; i < 20; i++)
     assert.equal((await post(guest, "/orders", csrfGuest, {})).status, 400);
   assert.equal((await post(guest, "/orders", csrfGuest, {})).status, 429);
+});
+
+test('progressive catalogue pages are bounded, stable and do not repeat products',async()=>{
+ const a=(await guest.get('/api/products?limit=20&page=1')).body,b=(await guest.get('/api/products?limit=20&page=2')).body,again=(await guest.get('/api/products?limit=20&page=1')).body;
+ assert.equal(a.products.length,20);assert.equal(b.products.length,20);assert.equal(new Set([...a.products,...b.products].map(p=>p.id)).size,40);assert.deepEqual(a.products.map(p=>p.id),again.products.map(p=>p.id));
+ for(const query of ['limit=0','page=-1','limit=oops','page=1.5','limit=10000'])assert.equal((await guest.get('/api/products?'+query)).status,400,query);
+});
+test('social placement, footer banners and discovery cards save and publish through the CMS',async()=>{
+ const draft=(await owner.get('/api/admin/content')).body.draft;
+ draft.socials.tiktok='https://www.tiktok.com/@liquorplug';draft.socialEnabled.tiktok=true;draft.socialPlacement={top:true,bottom:false};draft.footerBanners.portrait.title='A custom footer';draft.recipes[0].title='My mixing notes';
+ const saved=await owner.put('/api/admin/content').set('x-csrf-token',csrfOwner).send(draft);assert.equal(saved.status,200,JSON.stringify(saved.body));
+ assert.equal((await post(owner,'/admin/content/publish',csrfOwner,{})).status,200);
+ const live=(await guest.get('/api/bootstrap')).body.settings;assert.equal(live.socials.tiktok,draft.socials.tiktok);assert.equal(live.socialPlacement.bottom,false);assert.equal(live.footerBanners.portrait.title,'A custom footer');assert.equal(live.recipes[0].title,'My mixing notes');
+ draft.footerBanners.landscape.href='javascript:alert(1)';assert.equal((await owner.put('/api/admin/content').set('x-csrf-token',csrfOwner).send(draft)).status,400);
+ draft.footerBanners.landscape.href='/shop';draft.socials.tiktok='/account';assert.equal((await owner.put('/api/admin/content').set('x-csrf-token',csrfOwner).send(draft)).status,400);
+});
+test('stock minimum requires manager access and creates audited inventory movements',async()=>{
+ const p=await product({stock:3});
+ assert.equal((await post(staff,'/admin/stock/minimum',csrfStaff,{})).status,403);
+ const r=await post(owner,'/admin/stock/minimum',csrfOwner,{});assert.equal(r.status,200);assert.ok(r.body.changed>=1);assert.equal((await db.one('SELECT stock FROM products WHERE id=?',[p.id])).stock,10);
+ const movement=await db.one('SELECT delta,actor FROM stock_movements WHERE product_id=? ORDER BY created_at DESC',[p.id]);assert.equal(movement.delta,7);assert.equal(movement.actor,'owner@example.test');
+ const repeated=await post(owner,'/admin/stock/minimum',csrfOwner,{});assert.equal(repeated.body.changed,0);
+ await db.query('UPDATE products SET stock=8 WHERE id=?',[p.id]);await migrate(db);assert.equal((await db.one('SELECT stock FROM products WHERE id=?',[p.id])).stock,8);
+});
+test('private configuration status never exposes credentials or customer data',async()=>{
+ assert.equal((await guest.get('/api/admin/system')).status,403);assert.equal((await staff.get('/api/admin/system')).status,403);
+ const r=await owner.get('/api/admin/system');assert.equal(r.status,200);assert.equal(r.body.schemaReady,true);assert.ok(['SQLite','PostgreSQL'].includes(r.body.database));for(const key of Object.keys(r.body))assert.ok(!/password|secret|token/i.test(key));
+});
+
+test('an existing store upgrade preserves merchant edits and performs the opening stock update only once',async()=>{
+ const p=await product({stock:2,image:'/my-own-product.jpg'});
+ const original=(await db.one("SELECT data FROM content WHERE id='published'")).data;
+ const legacy={...JSON.parse(original),tagline:'Keep my branding',banners:{home:[{title:'Keep my campaign',image:'/own-campaign.jpg',href:'/brands'}]},sections:[{type:'featured',title:'Keep my picks',visible:true}]};
+ await db.query("UPDATE content SET data=? WHERE id='published'",[JSON.stringify(legacy)]);
+ await db.query('DELETE FROM migrations WHERE version=2');
+ await migrate(db);
+ const migrated=JSON.parse((await db.one("SELECT data FROM content WHERE id='published'")).data);
+ assert.equal(migrated.tagline,'Keep my branding');assert.equal(migrated.banners.home.at(-1).image,'/own-campaign.jpg');assert.equal(migrated.sections[0].title,'Keep my picks');assert.ok(migrated.footerBanners.portrait.image);
+ assert.equal((await db.one('SELECT stock FROM products WHERE id=?',[p.id])).stock,10);assert.equal((await db.one('SELECT image FROM products WHERE id=?',[p.id])).image,'/my-own-product.jpg');
+ await db.query('UPDATE products SET stock=7 WHERE id=?',[p.id]);await migrate(db);assert.equal((await db.one('SELECT stock FROM products WHERE id=?',[p.id])).stock,7);
 });

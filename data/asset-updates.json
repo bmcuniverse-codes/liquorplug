@@ -1,0 +1,364 @@
+{
+  "updated_at": "2026-10-28",
+  "project": "Liquor Plug",
+  "banners": [
+    {
+      "file": "oriki.png",
+      "title": "Experience True African Heritage",
+      "brand": "Oriki 11",
+      "width": 2048,
+      "height": 944,
+      "suggested_link": "/product/oriki-11-premium-london-dry-gin",
+      "product_id": "28739",
+      "catalogue_match": "Oriki 11 Premium London Dry Gin | Gin | 75cl",
+      "note": "Exact product and75cl size shown in supplied artwork; no discount shown.",
+      "path": "/media/banners/oriki.png",
+      "source": "Oriki E.png",
+      "sha256": "3f9ec381417234f616755a974e0b0593d690f14d8b513aa9087e2ff71e7a6728",
+      "unchanged": true
+    },
+    {
+      "file": "lords.png",
+      "title": "Be the Lord of the City",
+      "brand": "Lord's Dry Gin",
+      "width": 2048,
+      "height": 945,
+      "suggested_link": "/shop?q=Lord",
+      "product_id": "15083",
+      "catalogue_match": "Lord’s Dry Gin | Gin | 1l",
+      "note": "Brand match only. Banner depicts750ml; catalogue currently has1L. Use general brand search until matching750ml product is added.",
+      "path": "/media/banners/lords.png",
+      "source": "Lords E.png",
+      "sha256": "e144f4f54317fbf344070bc54a7bd9c20f5331e38e04bf628bf47267d0879343",
+      "unchanged": true
+    },
+    {
+      "file": "seamans.png",
+      "title": "The True Spirit of Our Culture",
+      "brand": "Seaman's Schnapps",
+      "width": 2048,
+      "height": 944,
+      "suggested_link": "/shop",
+      "product_id": null,
+      "catalogue_match": null,
+      "note": "No matching Seaman's product in catalogue. Keep generic shop link or assign after owner adds inventory; do not map to another brand.",
+      "path": "/media/banners/seamans.png",
+      "source": "Seamans E.png",
+      "sha256": "2fd422d0daeaefbdd711d873804bfb250454a28e58a60524cb76f8d3213c4574",
+      "unchanged": true
+    },
+    {
+      "file": "st-lauren.png",
+      "title": "Sparkling Happiness",
+      "brand": "St. Lauren",
+      "width": 2048,
+      "height": 946,
+      "suggested_link": "/shop",
+      "product_id": null,
+      "catalogue_match": null,
+      "note": "Nonalcoholic sparkling red grape fruit drink; no matching St. Lauren product in catalogue. This is not Laurent Perrier. Generic shop link until owner adds the product.",
+      "path": "/media/banners/st-lauren.png",
+      "source": "St lauren E.png",
+      "sha256": "5851cbec95fbbe505a1ff46cdd8d59c730b5ef60a86096d45925d1c25190ca74",
+      "unchanged": true
+    }
+  ],
+  "product_images": [
+    {
+      "slug": "glenlivet-12-years",
+      "path": "/media/catalogue/glenlivet-12.png",
+      "url": "https://ik.imagekit.io/cvygf2xse/theglenlivet-v2/wp-content/uploads/2026/04/12YO-Product-Page_hero_1x1.png?tr=q-85,w-800",
+      "source_url": "https://www.theglenlivet.com/en/whisky/12-year-old/",
+      "status": "visually inspected",
+      "id": "24817",
+      "confidence": "high: manufacturer page and visible bottle variant match",
+      "size_note": "Catalogue size unchanged; exact photographed size is not legible. Manufacturer image is illustrative; verify local packaging before sale."
+    },
+    {
+      "slug": "glenlivet-founders-reserve",
+      "path": "/media/catalogue/glenlivet-founders.png",
+      "url": "https://ik.imagekit.io/cvygf2xse/theglenlivet-v2/wp-content/uploads/2026/04/Founders-Reserve_hero_6x7.png?tr=q-85,w-800",
+      "source_url": "https://www.theglenlivet.com/en/whisky/12-year-old/",
+      "status": "visually inspected",
+      "id": "8635",
+      "confidence": "high: manufacturer page and visible bottle variant match",
+      "size_note": "Catalogue size unchanged; exact photographed size is not legible. Manufacturer image is illustrative; verify local packaging before sale."
+    },
+    {
+      "slug": "glenlivet-15-years-single-malt-scotch-whisky-70cl",
+      "path": "/media/catalogue/glenlivet-15.png",
+      "url": "https://ik.imagekit.io/cvygf2xse/theglenlivet-v2/wp-content/uploads/2026/04/15YO-Product-Page_hero_1_6x7.png?tr=q-85,w-800",
+      "source_url": "https://www.theglenlivet.com/en/whisky/15-year-old/",
+      "status": "visually inspected",
+      "id": "24827",
+      "confidence": "high: manufacturer page and visible bottle variant match",
+      "size_note": "Catalogue size unchanged; exact photographed size is not legible. Manufacturer image is illustrative; verify local packaging before sale."
+    },
+    {
+      "slug": "martell-xo",
+      "path": "/media/catalogue/martell-xo.png",
+      "url": "https://ik.imagekit.io/cvygf2xse/martell/wp-content/uploads/2025/01/01_XO-1.png",
+      "source_url": "https://www.martell.com/en-ww/cognacs/martell-xo/",
+      "status": "visually inspected",
+      "id": "8612",
+      "confidence": "high: manufacturer page and visible bottle variant match",
+      "size_note": "Catalogue size unchanged; exact photographed size is not legible. Manufacturer image is illustrative; verify local packaging before sale."
+    },
+    {
+      "slug": "martell-vs-single-distillery-70cl",
+      "path": "/media/catalogue/martell-vs.png",
+      "url": "https://ik.imagekit.io/cvygf2xse/martell/wp-content/uploads/2025/01/16_VS-1.png",
+      "source_url": "https://www.martell.com/en-ww/cognacs/martell-vs/",
+      "status": "visually inspected",
+      "id": "8611",
+      "confidence": "high: manufacturer page and visible bottle variant match",
+      "size_note": "Catalogue size unchanged; exact photographed size is not legible. Manufacturer image is illustrative; verify local packaging before sale."
+    },
+    {
+      "slug": "chivas-regal-12-years-70cl",
+      "path": "/media/catalogue/chivas-12.png",
+      "url": "https://ik.imagekit.io/cvygf2xse/chivasv2/wp-content/uploads/2026/02/chiavs-12-scaled-e1773677408594.png?tr=q-85,w-640",
+      "source_url": "https://www.chivas.com/en/our-collection/chivas-12/",
+      "status": "visually inspected",
+      "id": "8628",
+      "confidence": "high: manufacturer page and visible bottle variant match",
+      "size_note": "700ml visible on packshot, matching catalogue 70cl."
+    },
+    {
+      "slug": "chivas-regal-18-years-old",
+      "path": "/media/catalogue/chivas-18.png",
+      "url": "https://ik.imagekit.io/cvygf2xse/chivasv2/wp-content/uploads/2026/01/18-scaled-e1773677301935.png?tr=q-85,w-640",
+      "source_url": "https://www.chivas.com/en/our-collection/chivas-18/",
+      "status": "visually inspected",
+      "id": "8630",
+      "confidence": "high: manufacturer page and visible bottle variant match",
+      "size_note": "Catalogue size unchanged; exact photographed size is not legible. Manufacturer image is illustrative; verify local packaging before sale."
+    },
+    {
+      "slug": "bacardi-spice-rum-70cl",
+      "path": "/media/catalogue/bacardi-spiced.png",
+      "url": "https://d323g1xugy1rkz.cloudfront.net/wp-content/uploads/sites/32/2020/12/14142304/spiced_bottle-min-1.png",
+      "source_url": "https://www.bacardi.com/our-rums/carta-oro-rum/",
+      "status": "visually inspected",
+      "id": "20409",
+      "confidence": "high: manufacturer page and visible bottle variant match",
+      "size_note": "700ml visible on packshot, matching catalogue 70cl."
+    },
+    {
+      "slug": "bacardi-carta-oro-gold-rum",
+      "path": "/media/catalogue/bacardi-oro.png",
+      "url": "https://d323g1xugy1rkz.cloudfront.net/wp-content/uploads/sites/32/2020/08/14144529/cartaoro_bottle-min-1.png",
+      "source_url": "https://www.bacardi.com/our-rums/carta-oro-rum/",
+      "status": "visually inspected",
+      "id": "21892",
+      "confidence": "high: manufacturer page and visible bottle variant match",
+      "size_note": "700ml visible on packshot, matching catalogue 70cl."
+    },
+    {
+      "slug": "remy-martin-vsop-70cl",
+      "path": "/media/catalogue/remy-vsop.png",
+      "url": "https://static-prod.remymartin.com/app/uploads/2025/10/collection-remy-martin-vsop-2025-light-251029-01-562x800.png",
+      "source_url": "https://www.remymartin.com/en/collection/vsop/",
+      "status": "visually inspected",
+      "id": "8731",
+      "confidence": "high: manufacturer page and visible bottle variant match",
+      "size_note": "Catalogue size unchanged; exact photographed size is not legible. Manufacturer image is illustrative; verify local packaging before sale."
+    },
+    {
+      "slug": "remy-martin-1738-accord-royal-cognac",
+      "path": "/media/catalogue/remy-1738.png",
+      "url": "https://static-prod.remymartin.com/app/uploads/2026/05/collection-remy-martin-1738-accord-royal-light-260527-01-562x800.png",
+      "source_url": "https://www.remymartin.com/en/collection/vsop/",
+      "status": "visually inspected",
+      "id": "22704",
+      "confidence": "high: manufacturer page and visible bottle variant match",
+      "size_note": "Catalogue size unchanged; exact photographed size is not legible. Manufacturer image is illustrative; verify local packaging before sale."
+    },
+    {
+      "slug": "glenfiddich-12-years-70cl",
+      "path": "/media/catalogue/glenfiddich-12.png",
+      "url": "https://images.ctfassets.net/53l6u5v24bqr/6hnLiiRIcgDQA71etBphnL/ce17e9f75c3768863702de4f193e12a1/GF_12_YO__6700_AIIÌ_____10000_.png?w=640&q=85",
+      "source_url": "https://www.glenfiddich.com/en/our-collection/core-range/12-year-old",
+      "status": "visually inspected",
+      "id": "8631",
+      "confidence": "high: manufacturer page and visible bottle variant match",
+      "size_note": "Catalogue size unchanged; exact photographed size is not legible. Manufacturer image is illustrative; verify local packaging before sale."
+    },
+    {
+      "slug": "glenfiddich-15-years-70cl",
+      "path": "/media/catalogue/glenfiddich-15.png",
+      "url": "https://images.ctfassets.net/53l6u5v24bqr/1AyUlAvAMX1QQo1ZlrH399/b607350472e3a3eeff62123d2fce1ca6/15_YO__6700_AÌ___10000_.png?w=640&q=85",
+      "source_url": "https://www.glenfiddich.com/en/our-collection/core-range/12-year-old",
+      "status": "visually inspected",
+      "id": "8632",
+      "confidence": "high: manufacturer page and visible bottle variant match",
+      "size_note": "Catalogue size unchanged; exact photographed size is not legible. Manufacturer image is illustrative; verify local packaging before sale."
+    },
+    {
+      "slug": "glenfiddich-18-years-70cl",
+      "path": "/media/catalogue/glenfiddich-18.png",
+      "url": "https://images.ctfassets.net/53l6u5v24bqr/40ahgaxqc7fhCU6bx7VhDa/761b728bc4586c376874a9096f52c851/18_YO__6700_AÌ___10000_.png?w=640&q=85",
+      "source_url": "https://www.glenfiddich.com/en/our-collection/core-range/12-year-old",
+      "status": "visually inspected",
+      "id": "8633",
+      "confidence": "high: manufacturer page and visible bottle variant match",
+      "size_note": "Catalogue size unchanged; exact photographed size is not legible. Manufacturer image is illustrative; verify local packaging before sale."
+    },
+    {
+      "slug": "glenlivet-18-years",
+      "path": "/media/catalogue/glenlivet-18.png",
+      "url": "https://ik.imagekit.io/cvygf2xse/theglenlivet-v2/wp-content/uploads/2026/04/18YO-Product-Page_beautyshot_7x9.png?tr=q-90,w-700",
+      "source_url": "https://www.theglenlivet.com/en-us/whisky/18-year-old-single-malt-scotch/",
+      "id": "24818",
+      "status": "visually inspected",
+      "confidence": "high: official manufacturer asset and visible bottle variant match",
+      "size_note": "Official manufacturer 18-year-old product page specifies volume 70cl matching catalogue. Manufacturer lifestyle image includes bottle."
+    },
+    {
+      "slug": "patron-reposado-tequila",
+      "path": "/media/catalogue/patron-reposado.png",
+      "url": "https://www.patrontequila.com/binaries/content/gallery/patrontequila/products/patron-reposado/2025_bottle_repo.png",
+      "source_url": "https://www.patrontequila.com/products/patron-reposado.html",
+      "status": "visually inspected",
+      "id": "22703",
+      "confidence": "high: official manufacturer asset and visible bottle variant match",
+      "size_note": "Visible bottle label 750ml matches catalogue 75cl."
+    },
+    {
+      "slug": "sierra-reposado-tequila",
+      "path": "/media/catalogue/sierra-reposado.png",
+      "url": "https://www.sierratequila.com/en/wp-content/uploads/sites/2/bis-images/1109/2026-sierratequila-reposado-35abv-70cl-packshot-front-720x9999.png",
+      "source_url": "https://www.sierratequila.com/en/sierra-tequila/",
+      "status": "visually inspected",
+      "id": "20994",
+      "confidence": "high: official manufacturer asset and visible bottle variant match",
+      "size_note": "Official manufacturer asset filename specifies 70cl; current manufacturer packaging shown. Catalogue size remains 70cl."
+    },
+    {
+      "slug": "sierra-tropical-chilli-tequila-70cl",
+      "path": "/media/catalogue/sierra-tropical-chilli.png",
+      "url": "https://www.sierratequila.com/en/wp-content/uploads/sites/2/bis-images/1521/2026-sierraliqueur-tropicalchilli-18abv-70cl-packshot-front-1-720x9999.png",
+      "source_url": "https://www.sierratequila.com/en/sierra-liqueur/",
+      "status": "visually inspected",
+      "id": "20316",
+      "confidence": "high: official manufacturer asset and visible bottle variant match",
+      "size_note": "Official manufacturer asset filename specifies 70cl; current manufacturer packaging shown. Catalogue size remains 70cl."
+    },
+    {
+      "slug": "heineken-beer-33cl",
+      "path": "/media/catalogue/heineken-original.png",
+      "url": "https://www.heineken.com/media/iene2ygx/heineken-original-bottle.png",
+      "source_url": "https://www.heineken.com/global/en/our-products/heineken-original",
+      "status": "visually inspected",
+      "id": "20075",
+      "confidence": "high: official manufacturer asset and visible bottle variant match",
+      "size_note": "Official Original lager bottle image. Catalogue 33cl unchanged; image illustrative because printed size is not legible."
+    },
+    {
+      "slug": "patron-anejo-tequila",
+      "path": "/media/catalogue/patron-anejo.png",
+      "url": "https://www.patrontequila.com/binaries/content/gallery/patrontequila/products/patron-anejo/2025_bottle_anejo.png",
+      "source_url": "https://www.patrontequila.com/products/patron-anejo.html",
+      "status": "visually inspected",
+      "id": "17786",
+      "confidence": "high: official manufacturer asset and visible bottle variant match",
+      "size_note": "Visible bottle label 750ml matches catalogue 75cl."
+    },
+    {
+      "slug": "patron-silver-tequila",
+      "path": "/media/catalogue/patron-silver.png",
+      "url": "https://www.patrontequila.com/binaries/content/gallery/patrontequila/products/patron-silver/2025_bottle_silver.png",
+      "source_url": "https://www.patrontequila.com/products/patron-silver.html",
+      "status": "visually inspected",
+      "id": "17771",
+      "confidence": "high: official manufacturer asset and visible bottle variant match",
+      "size_note": "Visible bottle label 750ml matches catalogue 75cl."
+    },
+    {
+      "slug": "red-bull",
+      "path": "/media/catalogue/red-bull-250ml.png",
+      "url": "https://a.storyblok.com/f/287059/528x1348/53e078bcb9/gb_ed_250ml_energy-drink_country_rgb__cold_closed_front_com_full.png",
+      "source_url": "https://www.redbull.com/int-en/energydrink/products/red-bull-energy-drink",
+      "status": "visually inspected",
+      "id": "15201",
+      "confidence": "high: official manufacturer asset and visible bottle variant match",
+      "size_note": "Official asset filename specifies 250ml matching catalogue 250ml. Not reused for the 355ml product."
+    },
+    {
+      "slug": "moet-chandon-nectar-imperial-rose",
+      "path": "/media/catalogue/moet-nectar-rose.png",
+      "url": "https://www.moet.com/sites/default/files/styles/portrait_bottle/public/2021-09/Moe%CC%88t%20Nectar%20Impe%CC%81rial%20Rose%CC%81%2075cl.png?itok=DNCwbRb0",
+      "source_url": "https://www.moet.com/en-int/nectar-imperial-rose",
+      "status": "visually inspected",
+      "id": "8728",
+      "confidence": "high: official manufacturer asset and visible bottle variant match",
+      "size_note": "Official asset filename specifies 75cl, matching catalogue. Nectar Imperial Rose; not standard Rose Imperial."
+    },
+    {
+      "slug": "moet-and-chandon-ice-imperial",
+      "path": "/media/catalogue/moet-ice.png",
+      "url": "https://www.moet.com/sites/default/files/styles/portrait_bottle/public/2024-10/IMAGE%20PRODUIT%20SANS%20FOND%20-%20Ice%20Imperial-min_0.png?itok=ufPwn4jh",
+      "source_url": "https://www.moet.com/en-int/ice-imperial",
+      "status": "visually inspected",
+      "id": "8696",
+      "confidence": "high: official manufacturer asset and visible bottle variant match",
+      "size_note": "Official Ice Imperial manufacturer bottle image. Catalogue 75cl is unchanged; image is illustrative because printed size is not legible."
+    },
+    {
+      "slug": "moet-nectar-imperial-demi-sec-75cl",
+      "path": "/media/catalogue/moet-nectar.png",
+      "url": "https://www.moet.com/sites/default/files/styles/portrait_bottle/public/2024-11/IMAGE%20PRODUIT%20SANS%20FOND%20-%20Nectar%20Imperial-min.png?itok=SD5fn98v",
+      "source_url": "https://www.moet.com/en-int/nectar-imperial",
+      "status": "visually inspected",
+      "id": "8695",
+      "confidence": "high: official manufacturer asset and visible bottle variant match",
+      "size_note": "Official Nectar Imperial manufacturer bottle image. Catalogue 75cl is unchanged; image is illustrative because printed size is not legible."
+    },
+    {
+      "slug": "malibu-coconut-rum",
+      "path": "/media/catalogue/malibu-original-us.png",
+      "url": "https://assets.malibudrinks.com/wp-content/uploads/2026/06/Malibu-Original-US-Packshot.png",
+      "source_url": "https://www.malibudrinks.com/en-us/products/malibu-original/",
+      "status": "visually inspected",
+      "id": "8681",
+      "confidence": "high: official manufacturer asset and visible bottle variant match",
+      "size_note": "Official US asset and visible bottle label 750ml match catalogue 75cl."
+    },
+    {
+      "slug": "chivas-regal-xv-15-years-70cl",
+      "path": "/media/catalogue/chivas-xv.png",
+      "url": "https://ik.imagekit.io/cvygf2xse/chivasv2/wp-content/uploads/2026/02/chivas-xv-bottle-scaled-e1773678027447.png?tr=q-90,w-800",
+      "source_url": "https://www.chivas.com/en/collection/chivas-xv/",
+      "id": "8629",
+      "status": "visually inspected",
+      "confidence": "high: official manufacturer asset and visible bottle variant match",
+      "size_note": "Visible 15-year XV variant and 70cl label match catalogue. Current manufacturer packaging shown."
+    },
+    {
+      "slug": "olmeca-blanco-tequila",
+      "path": "/media/catalogue/olmeca-silver.webp",
+      "url": "https://olmecatequila.com/wp-content/uploads/2025/07/SILVER-3-4-700ml-43-1_m-2.webp",
+      "source_url": "https://olmecatequila.com/product/",
+      "status": "visually inspected",
+      "id": "8615",
+      "confidence": "high: official manufacturer asset and visible bottle variant match",
+      "size_note": "Manufacturer calls unaged blanco tequila Silver. Official asset filename specifies 700ml matching catalogue 70cl."
+    },
+    {
+      "slug": "jameson-original-irish-whiskey",
+      "path": "/media/catalogue/jameson-original.png",
+      "url": "https://ik.imagekit.io/cvygf2xse/jamesonwhiskey/wp-content/uploads/2026/03/Jameson-Original-Cropped-1.png?tr=q-90,w-500",
+      "source_url": "https://www.jamesonwhiskey.com/en-gb/our-whiskey/jameson-irish-whiskey",
+      "id": "8608",
+      "status": "visually inspected",
+      "confidence": "high: official manufacturer asset and visible bottle variant match",
+      "size_note": "Official UK Original bottle image. Catalogue 70cl unchanged; image illustrative because printed size is not legible. No miniature or bundle substitution."
+    }
+  ],
+  "notes": [
+    "Supplied banner originals copied byte for byte. No text, logo or offer altered.",
+    "New photos are from manufacturer-owned websites/CDNs, not retailer watermarked images.",
+    "Only the image field of matching catalogue products changed. Existing sizes, prices, names, brands and all other fields are preserved.",
+    "Manufacturer photos illustrate verified variants. Where bottle size is not legible, the manifest does not claim an exact photo size; catalogue sizes remain unchanged."
+  ]
+}

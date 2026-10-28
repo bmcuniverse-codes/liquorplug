@@ -2,6 +2,8 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import { mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import pg from "pg";
+import { postgresOptions } from "./config.mjs";
+import { recordError } from "./errors.mjs";
 pg.types.setTypeParser(20, (value) => {
   const n = Number(value);
   if (!Number.isSafeInteger(n))
@@ -12,18 +14,9 @@ const context = new AsyncLocalStorage();
 export async function openDatabase(options = {}) {
   const url = options.url ?? process.env.DATABASE_URL;
   let sqlite, pool;
-  if (url) {
-    pool = new pg.Pool({
-      connectionString: url,
-      max: 5,
-    ssl:
-      process.env.DATABASE_SSL === "true"
-        ? {
-            rejectUnauthorized: true,
-            ca: process.env.DATABASE_CA_CERT,
-          }
-        : undefined,
-    });
+  if (url || options.pool) {
+    pool = options.pool || new pg.Pool(postgresOptions(url));
+    pool.on?.('error', error => recordError(error));
   } else {
     const { DatabaseSync } = await import("node:sqlite");
     const path = resolve(
@@ -53,8 +46,10 @@ export async function openDatabase(options = {}) {
   }
   async function run(sql, args = [], conn) {
     if (pool) {
-      const r = await (conn || pool).query(pgSql(sql), args);
-      return { rows: r.rows, changes: r.rowCount };
+      try {
+        const r = await (conn || pool).query(pgSql(sql), args);
+        return { rows: r.rows, changes: r.rowCount };
+      } catch (error) { error.dbOperation=sql.trim().split(/\s+/)[0]; throw error; }
     }
     const statement = sqlite.prepare(sql);
     if (/^\s*(SELECT|PRAGMA|WITH)/i.test(sql) || /\bRETURNING\b/i.test(sql))

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, createContext } from "react";
+import React, { useState, useEffect, useContext, createContext, useRef, useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import {
   BrowserRouter,
@@ -34,6 +34,10 @@ import {
 import { api, setCsrf, money, date } from "./api";
 import Admin from "./Admin";
 import "./styles.css";
+import "./enhancements.css";
+import "./pwa";
+import {Carousel,SocialLinks,PromoBanner,EditorialSection,Advertising,FooterFeatures,InstallApp} from "./StorefrontExtras";
+import {mergeProducts} from "../shared/storefront.mjs";
 const Context = createContext();
 export const useStore = () => useContext(Context);
 function Copy({ name, children }) {
@@ -218,6 +222,8 @@ function Shell() {
           }
         />
       </Routes>
+      <FooterFeatures />
+      <InstallApp />
       <Footer />
       <AgeGate />
     </>
@@ -259,6 +265,7 @@ function Header() {
   };
   return (
     <>
+      <SocialLinks placement="top"/>
       <div className="announcement">
         <span>
           <Copy name="announcement">Good company deserves a great pour.</Copy>
@@ -342,110 +349,7 @@ function Header() {
     </>
   );
 }
-export function Banner({ page = "home", compact = false }) {
-  const { settings } = useStore();
-  const [i, setI] = useState(0),
-    [paused, setPaused] = useState(false);
-  const slides = (settings.banners[page] || settings.banners.shop || []).filter(
-    (x) =>
-      (!x.startsAt || Date.now() >= x.startsAt) &&
-      (!x.endsAt || Date.now() <= x.endsAt),
-  );
-  const location = useLocation();
-  useEffect(() => setI(0), [location.pathname]);
-  useEffect(() => {
-    if (
-      paused ||
-      slides.length < 2 ||
-      matchMedia("(prefers-reduced-motion: reduce)").matches
-    )
-      return;
-    const t = setInterval(() => setI((x) => (x + 1) % slides.length), 6500);
-    return () => clearInterval(t);
-  }, [slides.length, paused]);
-  if (!slides.length) return null;
-  const s = slides[i % slides.length];
-  return (
-    <section
-      className={
-        "hero " +
-        (page === "home" ? "hero-main" : "hero-small") +
-        (compact ? " compact" : "")
-      }
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      aria-roledescription="carousel"
-    >
-      <div className="hero-grain" />
-      {s.image ? (
-        <picture>
-          <source
-            media="(max-width: 600px)"
-            srcSet={s.mobileImage || s.image}
-          />
-          <img className="hero-bg" src={s.image} alt="" onError={fallback} />
-        </picture>
-      ) : (
-        <div className="hero-art" aria-hidden="true">
-          <div className="glow" />
-          <img
-            className="hero-packshot packshot-one"
-            src="/media/catalogue/hennessy-vs.png"
-            alt=""
-          />
-          <img
-            className="hero-packshot packshot-two"
-            src="/media/catalogue/moet-imperial-brut.png"
-            alt=""
-          />
-          <img
-            className="hero-packshot packshot-three"
-            src="/media/catalogue/jack-daniels-old-no7.png"
-            alt=""
-          />
-          <span className="hero-circle">
-            A BETTER
-            <br />
-            POUR.
-          </span>
-        </div>
-      )}
-      <div className="hero-content">
-        <p className="eyebrow">THE LIQUOR PLUG COLLECTION</p>
-        <h1>{s.title}</h1>
-        <p className="hero-description">{s.subtitle}</p>
-        {s.button && (
-          <Link className="button cream" to={s.href || "/shop"}>
-            {s.button}
-            <ArrowUpRight size={18} />
-          </Link>
-        )}
-      </div>
-      {slides.length > 1 && (
-        <div className="carousel-controls">
-          <button
-            aria-label="Previous banner"
-            onClick={() => setI((i + slides.length - 1) % slides.length)}
-          >
-            <ChevronLeft size={17} />
-          </button>
-          <span>
-            {(i % slides.length) + 1} / {slides.length}
-          </span>
-          <button
-            aria-label="Next banner"
-            onClick={() => setI((i + 1) % slides.length)}
-          >
-            <ChevronRight size={17} />
-          </button>
-          <button onClick={() => setPaused(!paused)}>
-            {paused ? "Play" : "Pause"}
-          </button>
-        </div>
-      )}
-    </section>
-  );
-}
+export function Banner(props) { return <Carousel {...props}/>; }
 function Perks() {
   return (
     <div className="perks">
@@ -490,9 +394,9 @@ function SectionTitle({ title, subtitle, to }) {
 }
 function Home() {
   const { settings, categories, brands } = useStore();
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(null),[error,setError]=useState("");
   useEffect(() => {
-    api("/products?limit=8").then(setData);
+    let alive=true;api("/products?limit=8").then(d=>alive&&setData(d)).catch(e=>alive&&setError(e.message));return()=>{alive=false;};
   }, []);
   return (
     <main>
@@ -534,10 +438,15 @@ function Home() {
                       <ProductCard key={p.id} p={p} />
                     ))}
                   </div>
-                ) : (
+                ) : error ? <ErrorBox>{error}</ErrorBox> : (
                   <Busy />
                 )}
+                <PromoBanner index={0}/>
               </section>
+            ) : s.type === "discovery" || s.type === "recipes" ? (
+              <EditorialSection key={i} section={s} recipes={s.type==="recipes"}/>
+            ) : s.type === "advertise" ? (
+              <Advertising key={i} section={s}/>
             ) : s.type === "wholesale" ? (
               <section className="wholesale-strip" key={i}>
                 <div>
@@ -621,20 +530,36 @@ export function ProductCard({ p }) {
   );
 }
 function Shop({ deals = false }) {
-  const { categories, brands } = useStore();
+  const { categories, brands, user } = useStore();
   const [params, setParams] = useSearchParams();
-  const [data, setData] = useState(null),
-    [error, setError] = useState(""),
-    [filters, setFilters] = useState(false);
-  useEffect(() => {
-    let live = true;
-    setData(null);
-    setError("");
-    api("/products?" + params.toString() + (deals ? "&deals=true" : ""))
-      .then((d) => live && setData(d))
-      .catch((e) => live && setError(e.message));
-    return () => (live = false);
-  }, [params.toString(), deals]);
+  const [data, setData] = useState(null),[error, setError] = useState(""),[filters, setFilters] = useState(false),[loading,setLoading]=useState(false),[autoLoad,setAutoLoad]=useState(true);
+  const sentinel=useRef(null),active=useRef(null),busy=useRef(false),generation=useRef(0),state=useRef(null);
+  const query=new URLSearchParams(params);query.delete('page');query.set('limit','20');if(deals)query.set('deals','true');
+  const key=query.toString()+'|'+(user?.id||'guest')+'|'+(user?.wholesale_status||'');
+  const requestPage=useCallback(async(page,replace=false)=>{
+    if(busy.current)return;
+    busy.current=true;setLoading(true);setError('');
+    const version=generation.current;
+    const controller=new AbortController();active.current=controller;
+    const q=new URLSearchParams(key.split('|')[0]);q.set('page',String(page));
+    try{
+      const result=await api('/products?'+q,{signal:controller.signal});
+      if(version!==generation.current)return;
+      const next={...result,products:replace?result.products:mergeProducts(state.current?.products||[],result.products)};
+      state.current=next;setData(next);
+    }catch(e){if(e.name!=='AbortError'&&version===generation.current)setError(e.message);}
+    finally{if(version===generation.current){busy.current=false;setLoading(false);}}
+  },[key]);
+  useEffect(()=>{
+    generation.current++;active.current?.abort();busy.current=false;state.current=null;setData(null);setError('');requestPage(1,true);
+    return()=>{generation.current++;active.current?.abort();busy.current=false;};
+  },[requestPage]);
+  const more=!!data&&data.page<data.pages;
+  useEffect(()=>{
+    if(!more||!autoLoad||error||loading||!sentinel.current||!('IntersectionObserver' in window))return;
+    const observer=new IntersectionObserver(entries=>{if(entries[0].isIntersecting)requestPage((state.current?.page||0)+1);},{rootMargin:'0px 0px 380px 0px'});
+    observer.observe(sentinel.current);return()=>observer.disconnect();
+  },[more,autoLoad,error,loading,data?.page,requestPage]);
   const change = (key, v) => {
     const p = new URLSearchParams(params);
     v ? p.set(key, v) : p.delete(key);
@@ -781,31 +706,21 @@ function Shop({ deals = false }) {
               </select>
             </div>
             <ErrorBox>{error}</ErrorBox>
+            {!data&&error&&<button className="button outline" onClick={()=>requestPage(1,true)}>Try again</button>}
             {!data && !error ? (
               <Busy />
             ) : data?.products.length ? (
               <>
                 <div className="product-grid shop-grid">
-                  {data.products.map((p) => (
-                    <ProductCard p={p} key={p.id} />
-                  ))}
+                  {data.products.map((p,i) => <React.Fragment key={p.id}>
+                    <ProductCard p={p}/>
+                    {(i+1)%20===0&&(i+1<data.total)&&<PromoBanner index={Math.floor(i/20)}/>}
+                  </React.Fragment>)}
                 </div>
-                <div className="pagination">
-                  <button
-                    disabled={data.page <= 1}
-                    onClick={() => change("page", data.page - 1)}
-                  >
-                    <ChevronLeft size={18} /> Previous
-                  </button>
-                  <span>
-                    {data.page} / {data.pages}
-                  </span>
-                  <button
-                    disabled={data.page >= data.pages}
-                    onClick={() => change("page", data.page + 1)}
-                  >
-                    Next <ChevronRight size={18} />
-                  </button>
+                <div className="load-more" ref={sentinel}>
+                  <p aria-live="polite">Showing {data.products.length} of {data.total} products</p>
+                  {loading?<Busy text="Finding more favourites…"/>:more?<button className="button outline" onClick={()=>requestPage(data.page+1)}>{error?'Try again':'Load more drinks'}</button>:<span>You’ve explored this selection.</span>}
+                  {more&&<button className="auto-load-toggle" aria-pressed={autoLoad} onClick={()=>setAutoLoad(!autoLoad)}>{autoLoad?'Pause automatic loading to explore the footer':'Resume automatic loading'}</button>}
                 </div>
               </>
             ) : (
@@ -2066,13 +1981,7 @@ function Footer() {
           {settings.email && (
             <a href={"mailto:" + settings.email}>{settings.email}</a>
           )}
-          {Object.entries(settings.socials || {})
-            .filter(([, v]) => v)
-            .map(([k, v]) => (
-              <a key={k} href={v} target="_blank" rel="noreferrer">
-                {k}
-              </a>
-            ))}
+          <SocialLinks placement="bottom"/>
           <Link to="/admin">Store dashboard</Link>
         </div>
       </div>

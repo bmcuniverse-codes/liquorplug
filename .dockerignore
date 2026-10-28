@@ -1,7 +1,11 @@
 node_modules
 dist
-.env
 .git
+.env
+.env.*
+!.env.example
 data/*.sqlite*
 data/backups
 uploads
+coverage
+test-results

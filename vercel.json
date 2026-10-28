@@ -8,11 +8,29 @@
     }
   },
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api?api_path=/api/$1" },
-    { "src": "/robots.txt", "dest": "/api?api_path=/robots.txt" },
-    { "src": "/sitemap.xml", "dest": "/api?api_path=/sitemap.xml" },
-    { "src": "/", "dest": "/api?render_path=/" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/api?render_path=/$1" }
-  ]
+    {
+      "src": "/api/(.*)",
+      "dest": "/api?api_path=/api/$1"
+    },
+    {
+      "src": "/robots.txt",
+      "dest": "/api?api_path=/robots.txt"
+    },
+    {
+      "src": "/sitemap.xml",
+      "dest": "/api?api_path=/sitemap.xml"
+    },
+    {
+      "src": "/",
+      "dest": "/api?render_path=/"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api?render_path=/$1"
+    }
+  ],
+  "installCommand": "npm ci --include=dev"
 }

@@ -1,3 +1,4 @@
+import { recordError } from "../server/errors.mjs";
 import { getApp } from "../server/runtime.mjs";
 export default async function handler(req, res) {
   try {
@@ -13,13 +14,13 @@ export default async function handler(req, res) {
     else if (apiPath)
       req.url = apiPath + (params.size ? "?" + params.toString() : "");
     return (await getApp())(req, res);
-  } catch {
+  } catch (error) {
+    const detail=recordError(error,req);
     res.statusCode = 503;
     res.setHeader("Content-Type", "application/json");
     res.end(
       JSON.stringify({
-        error:
-          "Store setup is incomplete. Check database and environment configuration.",
+        error: detail.message, reference: detail.id,
       }),
     );
   }

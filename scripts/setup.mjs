@@ -14,7 +14,7 @@ try {
     ownerPassword: process.env.OWNER_PASSWORD,
   });
   console.log(
-    "Database ready. Catalogue loaded with ZERO inventory. Add your stock, wholesale prices and enable delivery zones in admin.",
+    "Database ready. Catalogue ready with 10 opening units per new product. Existing stores receive the one-time minimum-stock upgrade. Set wholesale prices and enable delivery zones in admin.",
   );
 } finally {
   await db.close();

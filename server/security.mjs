@@ -68,8 +68,8 @@ export function csv(rows) {
   );
 }
 export function safeLink(v) {
-  return (
-    typeof v === "string" &&
-    ((v.startsWith("/") && !v.startsWith("//")) || /^https:\/\//i.test(v))
-  );
+  if(typeof v!=='string'||/[\\\u0000-\u001f\u007f]/.test(v))return false;
+  if(v.startsWith('/')&&!v.startsWith('//'))return true;
+  if(!/^https:\/\//i.test(v))return false;
+  try{const url=new URL(v);return url.protocol==='https:'&&!!url.hostname&&!url.username&&!url.password;}catch{return false;}
 }

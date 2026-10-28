@@ -1,5 +1,7 @@
 # Deployment and operations
 
+See **UPDATE-GUIDE.md** for applying this version to an existing store, footer/social editing and app installation.
+
 ## Environment
 
 Use `.env.example` locally. In hosting dashboards, set environment variables directly. Never put Paystack secret keys, database URLs or SMTP passwords into frontend code, Git or product content.
@@ -11,7 +13,8 @@ Required live configuration:
 | `NODE_ENV` | `production` |
 | `PUBLIC_URL` | Exact HTTPS origin, e.g. `https://your-domain.com`, no trailing slash |
 | `DATABASE_URL` | PostgreSQL URI for Vercel; optional on persistent Node hosting |
-| `DATABASE_SSL` | `true` when required by the PostgreSQL provider; valid certificates are required |
+| `DATABASE_SSL` | `true` for Supabase; certificate verification remains enabled |
+| `DATABASE_CA_CERT` | Complete PEM root certificate from Supabase Database SSL settings, with BEGIN and END lines; see UPDATE-GUIDE.md |
 | `OWNER_EMAIL`, `OWNER_PASSWORD` | Initial owner credentials; create the owner before opening the store |
 | `PAYSTACK_SECRET_KEY` | Your Paystack test key first, then the approved live key |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | Mail service settings; port 465 uses TLS, 587 uses STARTTLS |

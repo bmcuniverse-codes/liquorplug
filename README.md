@@ -2,6 +2,8 @@
 
 Mobile-first retail and wholesale drinks store, with an Express API, React storefront, admin dashboard, Paystack integration and WhatsApp order handoff. Black and #4E0707 branding. This is the application source, not a static-only landing page.
 
+For an existing store, start with **docs/UPDATE-GUIDE.md**. The update adds social placement controls, campaign carousels, progressive shopping, editorial content, portrait/landscape footer banners, reasons to shop, and PWA installation.
+
 ## Start locally
 
 1. Install Node.js **24 LTS** (22.13+ also supported).
@@ -18,10 +20,12 @@ No default admin account or shared password is shipped. `db:setup` creates your 
 
 - Website editor → Branding: upload your logo.
 - Products: review imported retail prices, set your wholesale prices, descriptions and images.
-- Inventory: add the stock you actually hold. Imported products start at **zero stock**.
+- Inventory: add the stock you actually hold. New catalogue installations start at **10 units**. Existing active products receive a one-time minimum of 10; later deployments do not refill inventory.
 - Delivery areas: set fees/minimum orders and enable only areas you can serve. All **20 LGAs** are present but start disabled.
 - Website editor → Business: review **2348062833017**, add your email/address/hours, configure wholesale minimums and optional pickup.
-- Website editor → Banners: each page has its own image carousel, including optional mobile images and scheduling. Add/reorder/remove slides.
+- Website editor → Banners: each page has its own image carousel, including optional mobile images, full-artwork layout, timing and scheduling. The promotions group inserts a banner after each 20 shop products.
+- Website editor → Social media: add profile links (including TikTok), enable platforms and select top/bottom placement.
+- Website editor → Footer banners: edit portrait/landscape artwork and the reasons to buy. Discovery & recipes and Advertising control the new homepage content.
 - Website editor: save draft, preview, publish. These edits use the database and do not require a new deployment.
 - Configure Paystack and SMTP in the server environment; see **docs/DEPLOYMENT.md**.
 
@@ -29,11 +33,11 @@ No default admin account or shared password is shipped. `db:setup` creates your 
 
 - **532** factual product listings from the Naija Liquor public catalogue.
 - **42** named source brands plus **Other Brands**; **25** categories.
-- **19** manufacturer image files used by **23** product entries; **509** entries use the labelled image placeholder.
+- **48** manufacturer image files used by **52** product entries; **480** entries use the labelled image placeholder.
 - Imported retail prices are **reference prices**, not confirmed Liquor Plug selling prices. No wholesale prices or competitor promotional promises are activated.
 - Product marketing descriptions and competitor watermarked photographs were not copied.
 - Some manufacturer packshots depict another bottle-size variant; check the image against the product size before publishing it as your final store inventory.
-- Sources, download URLs and retrieval details: **data/catalogue-sources.json**. Original factual product data: **data/catalogue.json**.
+- Sources, download URLs and retrieval details: **data/catalogue-sources.json**. Original factual product data: **data/catalogue.json**. Added image attribution and supplied banner details: **data/asset-updates.json**.
 
 ## How orders work
 
@@ -62,7 +66,8 @@ Guest order access uses a private token saved in the checkout browser. Customers
 | `npm run build` | Compile the storefront |
 | `npm start` | Serve the production build |
 | `npm run db:setup` | Migrate, seed catalogue, create initial owner |
-| `npm test` | Automated functional/security tests |
+| `npm test` | SQLite functional/security and configuration tests |
+| `npm run test:postgres` | PostgreSQL engine integration tests with PGlite |
 | `npm run backup` | Consistent SQLite or PostgreSQL database backup |
 | `node --env-file-if-exists=.env scripts/maintenance.mjs` | Release expired reservations, process queued email, clean expired auth data |
 

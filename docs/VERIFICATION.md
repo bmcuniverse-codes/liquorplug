@@ -1,36 +1,30 @@
-# Verification and final acceptance
+# Verification and remaining live checks
 
-The production frontend compiles successfully. **38 automated tests pass.** Tests run against a temporary SQLite database with the same API routes used by the application. They do not contact live payment/email services.
+Verified on 28 October 2026 using Node 24.22.1.
 
-## Automated checks
+## Completed
 
-`npm test` verifies catalogue counts, 20 default-disabled LGAs, wholesale-price privacy, anonymous/staff permissions, CSRF/origin protection, authoritative pricing, delivery eligibility/minimums, adult/quantity validation, persisted WhatsApp orders, simultaneous stock requests, duplicate checkout keys, private guest-order access, wholesale approvals/minimums, reservation expiry, payment-before-dispatch, manual payment/fulfilment/refund records, cancellation idempotency, coupons, unconfigured payments, webhook signatures, provider verification mocks, duplicate webhook handling, amount mismatches, draft/publish/restore, invalid URLs, CSV preview/commit, malicious upload rejection, spreadsheet formula escaping and sitemap/robots output.
+- `npm run build`: successful production build.
+- `npm test`: **51 passed**, zero failures. Uses a temporary SQLite database for API checks, plus configuration/content/PWA checks.
+- `npm run test:postgres`: **42 passed**, zero failures, one expected skip (the SQLite-only backup test). Uses the PGlite PostgreSQL engine through the application's query/transaction adapter. This validates PostgreSQL SQL and application logic; it does not establish a TCP/TLS connection to your hosted Supabase project.
+- `npm audit --omit=dev`: zero reported advisories after updating the affected request-parser and upload packages. Audit results can change after this date.
+- Public storefront rendered in the supported browser preview: desktop homepage; narrow 320/390-pixel frames for homepage/shop; portrait/landscape footer banners; reasons-to-shop content; install instructions. Measured document widths stayed within the available viewport on the checked pages.
+- Shop began with 20 products and added further batches with promotional breaks. A manual Load more action and subsequent automatic loading were observed; the list then remained at 60 rather than loading all 532 products.
 
-Additional tests cover SEO rendering/escaping, late-payment stock review/reallocation and duplicate-success payment recording. See the current test output for the final count.
+## Automated coverage
 
-`npm audit --omit=dev` completed with zero reported production dependency advisories at packaging time. A dependency lockfile is included. Run the audit again when installing or updating later.
+The tests cover catalogue/default LGAs, role permissions, CSRF/origin checks, wholesale privacy and eligibility, authoritative prices, delivery eligibility/fees, age/quantity validation, persisted WhatsApp orders, stock reservations and simultaneous checkout, duplicate submissions, private guest-order access, expiry/cancellation, payment-before-dispatch, payment/refund records, coupons, signed webhooks and mocked provider verification, duplicate/late payments, CSV/XLSX import/export safety, upload rejection, drafts/publish/restore and SEO escaping.
 
-## Not exercised against your accounts
+New checks cover stable 20-product pages, invalid pagination, social/footer/editorial publishing and unsafe links, manager-only stock floor operations and movement history, migration preservation/idempotency, private system status, safe error messages, strict certificate handling, correct S3 client options, scheduled banners, product deduplication, manifest icons and service-worker avoidance of sensitive routes.
 
-- Actual Paystack test/live transactions and provider callback delivery.
-- SMTP connectivity and inbox delivery.
-- A hosted PostgreSQL database, storage bucket, Vercel deployment or production domain.
-- An offsite backup job or real restore.
-- Visual browser/device testing. The workspace did not expose the supported browser QA capability; a browser was not installed or substituted. Responsive styles were reviewed, but this is not a claim that rendered phone screenshots were inspected.
+## Not verified against your accounts/devices
 
-## Phone/desktop visual acceptance
+- The original deployed error cannot be reproduced from its generic message alone. Configuration and upload issues were corrected, and errors now provide actionable messages/references. A remaining deployment error must be matched to the new reference in Vercel runtime logs.
+- Live Supabase networking, TLS certificate chain, table ownership, storage credentials and public bucket access.
+- A real Paystack test/live transaction, webhook delivery, SMTP connection or email inbox delivery. Provider behaviour was mocked in automated payment tests.
+- Native browser installation prompts on a real Android, iPhone or desktop device. The internal preview uses HTTP; installation must be checked on your HTTPS production domain.
+- Every admin screen on a physical phone, external backups/restoration or production load capacity. CMS save/publish and admin permissions were verified through the real API.
 
-Open the app on a phone and in browser responsive mode at **320, 360, 390, 414, 768 and 1280 CSS pixels**:
+## Deployment acceptance
 
-1. Confirm `document.documentElement.scrollWidth <= window.innerWidth` on the homepage, shop, product, cart, checkout and admin screens. Admin tables may scroll inside their own container, while the page must remain within the viewport.
-2. Open/close the mobile menu, search, filter, sort and change catalogue pages.
-3. Check long product names, large prices, images, empty states and error messages.
-4. Add a stocked product, adjust quantities, choose an enabled location and review the order total.
-5. Complete a WhatsApp checkout, open the prefilled message, refresh the confirmation and check the same reference in admin.
-6. In Paystack test mode, complete one successful and one abandoned payment. Check that browser callbacks alone cannot mark orders paid and repeated webhooks do not reduce inventory twice.
-7. Approve a wholesale account. Confirm retail accounts cannot see wholesale prices and minimum quantities are enforced.
-8. Upload a desktop/mobile banner, save a draft, preview it, publish and refresh another browser to confirm it is live.
-9. Test admin product and stock edits, CSV preview/import, order updates and staff permission restrictions.
-10. Check keyboard focus, form labels, touch targets, carousel pause controls and reduced-motion settings. Confirm your product photos, policies, fees and contact details are ready for customers.
-
-For serverless hosting, confirm the external maintenance schedule runs while the site is idle. For persistent Node hosting, keep the process running and retain the database/uploads across restarts.
+Follow UPDATE-GUIDE.md. Confirm login on the exact configured PUBLIC_URL, open Admin → System status, upload one image, publish a banner/social change, set serviceable delivery fees, and create a test order. Verify the same WhatsApp order reference in the dashboard without treating a prefilled message as proof it was sent or paid. Complete a Paystack test-mode transaction and email delivery check before taking live payments. Check PWA installation and mobile scrolling on your customers' actual devices.

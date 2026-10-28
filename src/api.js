@@ -23,7 +23,7 @@ export async function api(path, options = {}) {
   } catch {
     throw Error("The server returned an unexpected response.");
   }
-  if (!r.ok) throw Error(d.error || "Request failed");
+  if (!r.ok) throw Error((d.error || "Request failed")+(d.reference?` (Reference: ${d.reference})`:''));
   return d;
 }
 export const money = (n) =>

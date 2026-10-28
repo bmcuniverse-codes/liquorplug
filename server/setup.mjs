@@ -1,8 +1,11 @@
 import { readFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import bcrypt from "bcryptjs";
+import { upgradeStore } from "./upgrade.mjs";
 import { defaults, lgas } from "./defaults.mjs";
 export async function migrate(db) {
+  // One transaction/advisory lock also protects concurrent serverless cold starts.
+  return db.tx(async()=>{
   const schema = await readFile(
     new URL("./schema.sql", import.meta.url),
     "utf8",
@@ -23,6 +26,8 @@ export async function migrate(db) {
     "INSERT INTO migrations(version,applied_at) VALUES(1,?) ON CONFLICT(version) DO NOTHING",
     [Date.now()],
   );
+  await upgradeStore(db);
+  });
 }
 export async function seed(
   db,
@@ -82,7 +87,7 @@ export async function seed(
           p.brand || "",
           p.size || "",
           Math.round((Number(p.price) || 0) * 100),
-          demoStock ? 24 : 0,
+          demoStock ? 24 : 10,
           p.image && p.image !== "/placeholder.svg" ? 1 : 0,
           p.image || "/placeholder.svg",
           p.source_url || "",

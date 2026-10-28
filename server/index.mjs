@@ -24,7 +24,8 @@ if (production) {
   });
   app.use(vite.middlewares);
 }
-const port = Number(process.env.PORT || 3000);
+const portFlag=process.argv.indexOf('--port');
+const port = Number(portFlag>=0?process.argv[portFlag+1]:(process.env.PORT || 3000));
 app.listen(port, "0.0.0.0", () =>
   console.log(`Liquor Plug available on port ${port}`),
 );

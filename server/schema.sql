@@ -22,3 +22,5 @@ CREATE INDEX IF NOT EXISTS orders_created ON orders(created_at);
 CREATE INDEX IF NOT EXISTS orders_user ON orders(user_id);
 CREATE INDEX IF NOT EXISTS products_category ON products(category);
 CREATE INDEX IF NOT EXISTS events_order ON order_events(order_id);
+
+CREATE INDEX IF NOT EXISTS products_catalogue_order ON products(archived,visible,featured,name,id);

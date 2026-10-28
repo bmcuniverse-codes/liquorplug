@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { useStore, Banner, Field, Button, ErrorBox, Busy } from "./main";
 import { api, money, date, slug } from "./api";
+import {SocialEditor,EditorialEditor,AdvertisingEditor,FooterEditor} from "./ContentExtras";
 const tabs = [
   ["overview", "Overview", LayoutDashboard],
   ["orders", "Orders", ShoppingBag],
@@ -44,6 +45,7 @@ const tabs = [
   ["team", "Team access", Shield],
   ["audit", "Activity log", Activity],
   ["notifications", "Notifications", Bell],
+  ["system", "System status", Activity],
 ];
 const managerTabs = tabs.map((x) => x[0]).filter((x) => x !== "team");
 const kobo = (v) => Math.round(Number(v || 0) * 100);
@@ -301,6 +303,7 @@ export default function Admin() {
             team: <Team />,
             audit: <Audit />,
             notifications: <Notifications />,
+            system: <SystemStatus/>,
           }[current]
         }
       </div>
@@ -810,12 +813,15 @@ function Inventory() {
   const [edit, setEdit] = useState(null),
     [q, setQ] = useState("");
   const history = useData("/admin/stock");
+  const {notify}=useStore();const [restocking,setRestocking]=useState(false),[stockError,setStockError]=useState('');
+  const minimum=async()=>{if(!confirm('Set every active product with fewer than 10 available units to 10? This adds inventory and is recorded in the stock history.'))return;setRestocking(true);setStockError('');try{const result=await api('/admin/stock/minimum',{method:'POST'});notify(`${result.changed} products updated`);await reload();await history.reload();}catch(e){setStockError(e.message);}finally{setRestocking(false);}};
   return (
     <>
       <PageHeader
         title="Every bottle accounted for."
         subtitle="Adjust available stock and retain a record of each change."
       />
+      <section className="admin-card"><h2>Opening stock</h2><p>The initial update sets a minimum of 10 units once. Use this button only when those units are available in store.</p><button className="button outline" disabled={restocking} onClick={minimum}>{restocking?'Updating…':'Set minimum stock to 10'}</button><ErrorBox>{stockError}</ErrorBox></section>
       <section className="admin-card">
         <Field
           label="Find a product"
@@ -1420,6 +1426,10 @@ function Content() {
           "branding",
           "navigation",
           "business",
+          "social media",
+          "discovery & recipes",
+          "advertising",
+          "footer banners",
           "policies",
           "seo",
           "versions",
@@ -1437,9 +1447,11 @@ function Content() {
         {tab === "banners" ? (
           <>
             <h2>Banner carousels</h2>
+            <label className="check"><input type="checkbox" checked={draft.carousel?.autoplay!==false} onChange={e=>set('carousel',{...draft.carousel,autoplay:e.target.checked})}/>Automatically advance slides</label>
+            <Field label="Seconds between slides" type="number" min="3" max="20" value={(draft.carousel?.interval||6500)/1000} onChange={e=>set('carousel',{...draft.carousel,interval:Math.round(Number(e.target.value)*1000)})}/>
+            <p className="help">The promotions carousel supplies the banners between every 20 shop products. Each slide has its own editable Shop now link.</p>
             <p>
-              Each page has its own slides. Mobile images are optional; use
-              portrait crops for phone screens.
+              Each page has its own slides. Optional mobile images can use a different crop. Full artwork keeps the entire image visible.
             </p>
             <Field label="Page">
               <select value={page} onChange={(e) => setPage(e.target.value)}>
@@ -1463,6 +1475,8 @@ function Content() {
                     Remove slide
                   </button>
                 </div>
+                <label className="check"><input type="checkbox" checked={b.visible!==false} onChange={e=>bannerChange(i,'visible',e.target.checked)}/>Show this slide</label>
+                <Field label="Image layout"><select value={b.layout||'editorial'} onChange={e=>bannerChange(i,'layout',e.target.value)}><option value="editorial">Background image with headline</option><option value="artwork">Full artwork without cropping</option></select></Field>
                 <Field label="Headline">
                   <textarea
                     value={b.title}
@@ -1744,7 +1758,11 @@ function Content() {
               </div>
             ))}
           </>
-        ) : tab === "business" ? (
+        ) : tab === "social media" ? <SocialEditor draft={draft} set={set}/>
+          : tab === "discovery & recipes" ? <EditorialEditor draft={draft} set={set} ImageField={ImageField}/>
+          : tab === "advertising" ? <AdvertisingEditor draft={draft} set={set} ImageField={ImageField}/>
+          : tab === "footer banners" ? <FooterEditor draft={draft} set={set} ImageField={ImageField}/>
+          : tab === "business" ? (
           <>
             <h2>Contact & business settings</h2>
             {[
@@ -1758,16 +1776,6 @@ function Content() {
                 label={label}
                 value={draft[k]}
                 onChange={(e) => set(k, e.target.value)}
-              />
-            ))}
-            {["instagram", "facebook"].map((k) => (
-              <Field
-                key={k}
-                label={k + " URL"}
-                value={draft.socials[k]}
-                onChange={(e) =>
-                  set("socials", { ...draft.socials, [k]: e.target.value })
-                }
               />
             ))}
             <h3>Wholesale rules</h3>
@@ -2528,4 +2536,9 @@ function Notifications() {
       )}
     </>
   );
+}
+
+function SystemStatus(){
+ const {data,error,reload}=useData('/admin/system');
+ return <><PageHeader title="Store configuration" subtitle="Private checks for the database and connected services."><button className="button outline" onClick={reload}>Refresh checks</button></PageHeader><ErrorBox>{error}</ErrorBox>{data&&<section className="admin-card"><h2>Services</h2><dl className="system-status">{Object.entries(data).filter(([key])=>key!=='recentErrors').map(([key,value])=><React.Fragment key={key}><dt>{key.replace(/([A-Z])/g,' $1')}</dt><dd>{typeof value==='boolean'?(value?'Ready':'Not configured'):String(value)}</dd></React.Fragment>)}</dl><p className="help">Configured means environment values are present. Run a real payment, email and upload test to verify each provider.</p><h3>Recent errors on this server instance</h3>{data.recentErrors?.length?<Table rows={data.recentErrors} columns={[{label:'Reference',key:'id'},{label:'Code',key:'code'},{label:'Path',key:'path'},{label:'When',key:'time'}]}/>:<p>No recent errors on this instance.</p>}</section>}</>;
 }

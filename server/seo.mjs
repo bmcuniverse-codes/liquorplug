@@ -9,7 +9,12 @@ const escape = (s) =>
       ],
   );
 export async function renderPage(db, path = "/") {
-  const template = await readFile(resolve("dist/index.html"), "utf8");
+  let template;
+  try { template=await readFile(new URL('../dist/index.html',import.meta.url),'utf8'); }
+  catch(error){
+    if(error.code!=='ENOENT'||process.env.NODE_ENV==='production')throw error;
+    template=await readFile(new URL('../index.html',import.meta.url),'utf8');
+  }
   const s = JSON.parse(
     (await db.one("SELECT data FROM content WHERE id='published'")).data,
   );

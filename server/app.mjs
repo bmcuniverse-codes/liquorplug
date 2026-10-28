@@ -1,3 +1,7 @@
+import { normalizeSettings } from "./content.mjs";
+import { minimumStock } from "./upgrade.mjs";
+import { publicOrigin, storageOptions } from "./config.mjs";
+import { describeError, recordError, recentErrors } from "./errors.mjs";
 import express from "express";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
@@ -78,10 +82,9 @@ const publicProduct = (p, u) => {
 };
 const staffRoles = ["owner", "manager", "staff"];
 async function settings(db, state = "published") {
-  return JSON.parse(
-    (await db.one("SELECT data FROM content WHERE id=?", [state]))?.data ||
-      JSON.stringify(defaults),
-  );
+  return normalizeSettings(JSON.parse(
+    (await db.one("SELECT data FROM content WHERE id=?", [state]))?.data || JSON.stringify(defaults)
+  ));
 }
 async function update(db, table, data, key, value) {
   const fields = Object.keys(data);
@@ -208,7 +211,7 @@ export function createApp(db, { production = false } = {}) {
         if (
           origin &&
           origin !==
-            new URL(process.env.PUBLIC_URL || "http://localhost:3000").origin
+            publicOrigin()
         )
           fail(403, "Request origin is not allowed.");
       }
@@ -263,8 +266,9 @@ export function createApp(db, { production = false } = {}) {
         inStock = "",
         deals = "",
       } = req.query;
-      const page = Math.max(1, Number(req.query.page) || 1),
-        limit = Math.min(60, Math.max(1, Number(req.query.limit) || 20));
+      const page = Number(req.query.page ?? 1), limit = Number(req.query.limit ?? 20);
+      if (!Number.isSafeInteger(page) || page<1 || page>100000 || !Number.isSafeInteger(limit) || limit<1 || limit>60)
+        fail(400, 'Page and limit must be whole numbers (limit 1–60).');
       let where = "archived=0 AND visible=1",
         args = [];
       for (const [col, val] of [
@@ -316,7 +320,7 @@ export function createApp(db, { production = false } = {}) {
         ).count,
       );
       const products = await db.all(
-        `SELECT * FROM products WHERE ${where} ORDER BY ${ordering} LIMIT ? OFFSET ?`,
+        `SELECT * FROM products WHERE ${where} ORDER BY ${ordering},id ASC LIMIT ? OFFSET ?`,
         [...args, limit, (page - 1) * limit],
       );
       res.json({
@@ -721,6 +725,18 @@ export function createApp(db, { production = false } = {}) {
       });
     }),
   );
+  app.get('/api/admin/system', wrap(async (req,res)=>{
+    await db.one('SELECT 1 AS ready');
+    res.json({database:db.postgres?'PostgreSQL':'SQLite',schemaReady:true,
+      publicOrigin:publicOrigin(),storageConfigured:['S3_BUCKET','S3_PUBLIC_URL','S3_ACCESS_KEY_ID','S3_SECRET_ACCESS_KEY'].every(k=>!!process.env[k]),
+      emailConfigured:!!(process.env.SMTP_HOST&&process.env.SMTP_FROM),
+      paymentMode:process.env.PAYSTACK_SECRET_KEY?.startsWith('sk_live_')?'live':process.env.PAYSTACK_SECRET_KEY?'test':'not configured',
+      recentErrors:recentErrors()});
+  }));
+  app.post('/api/admin/stock/minimum',wrap(async(req,res)=>{
+    const changed=await db.tx(()=>minimumStock(db,10,req.user.email));
+    await audit(db,req.user,'stock.minimum',{minimum:10,changed});res.json({changed});
+  }));
   app.get(
     "/api/admin/products",
     wrap(async (req, res) =>
@@ -1179,7 +1195,20 @@ export function createApp(db, { production = false } = {}) {
   app.put(
     "/api/admin/content",
     wrap(async (req, res) => {
-      const b = req.body;
+      const b = parse(z.object({
+        primary:z.string(),background:z.string(),whatsapp:z.string(),
+        sections:z.array(z.object({type:z.string(),title:z.string(),subtitle:z.string().optional(),visible:z.boolean()}).passthrough()),
+        banners:z.record(z.string(),z.array(z.object({title:z.string(),href:z.string().optional(),image:z.string().optional(),mobileImage:z.string().optional()}).passthrough()).max(40)),
+        policies:z.record(z.string(),z.string()),navigation:z.array(z.object({label:z.string(),href:z.string()})),footerLinks:z.array(z.object({label:z.string(),href:z.string()})),
+        socials:z.record(z.string(),z.string()).optional(),socialEnabled:z.record(z.string(),z.boolean()).optional(),
+        socialPlacement:z.object({top:z.boolean(),bottom:z.boolean()}).optional(),
+        footerBanners:z.record(z.string(),z.object({visible:z.boolean(),title:z.string(),image:z.string(),href:z.string(),text:z.string().optional(),button:z.string().optional()}).passthrough()).optional(),
+        whyBuyCards:z.array(z.object({title:z.string(),text:z.string()})).max(24).optional(),
+        discoveryCards:z.array(z.object({title:z.string(),text:z.string(),href:z.string(),image:z.string()}).passthrough()).max(24).optional(),
+        recipes:z.array(z.object({title:z.string(),text:z.string(),href:z.string(),image:z.string()}).passthrough()).max(24).optional(),
+        advertising:z.object({enabled:z.boolean(),title:z.string(),text:z.string(),button:z.string(),href:z.string(),image:z.string()}).optional(),
+        carousel:z.object({autoplay:z.boolean(),interval:z.number().int().min(3000).max(20000)}).optional(),
+      }).passthrough(),req.body);
       if (JSON.stringify(b).length > 500000) fail(400, "Content is too large.");
       if (
         !/^#[0-9a-f]{6}$/i.test(b.primary) ||
@@ -1203,8 +1232,15 @@ export function createApp(db, { production = false } = {}) {
       if (b.socialImage && !safeLink(b.socialImage))
         fail(400, "Sharing image must use a site path or HTTPS URL.");
       for (const value of Object.values(b.socials || {}))
-        if (value && !safeLink(value))
+        if (value && (typeof value!=='string'||!/^https:\/\//i.test(value)||!safeLink(value)))
           fail(400, "Social links must use HTTPS URLs.");
+      for (const key of ['discoveryCards','recipes','whyBuyCards']) {
+        if (b[key] && (!Array.isArray(b[key]) || b[key].length>24)) fail(400,'Use up to 24 discovery or recipe cards.');
+        for (const card of b[key]||[])for(const field of ['image','href'])if(card[field]&&!safeLink(card[field]))fail(400,'Card links must use HTTPS or a site path.');
+      }
+      if(b.advertising)for(const field of ['href','image'])if(b.advertising[field]&&!safeLink(b.advertising[field]))fail(400,'Advertising links must use HTTPS or a site path.');
+      for(const banner of Object.values(b.footerBanners||{}))for(const field of ['href','image'])if(banner[field]&&!safeLink(banner[field]))fail(400,'Footer banner links must use HTTPS or a site path.');
+      if(b.carousel && (!Number.isInteger(b.carousel.interval)||b.carousel.interval<3000||b.carousel.interval>20000))fail(400,'Carousel interval must be 3–20 seconds.');
       if (b.logo && !safeLink(b.logo))
         fail(400, "Logo URL must be a site path or HTTPS URL.");
       if (!Number.isSafeInteger(b.wholesaleMinimum) || b.wholesaleMinimum < 0)
@@ -1359,15 +1395,7 @@ export function createApp(db, { production = false } = {}) {
         );
         if (!process.env.S3_PUBLIC_URL)
           fail(503, "Configure S3_PUBLIC_URL for uploaded images.");
-        const client = new S3Client({
-          region: process.env.S3_REGION || "auto",
-          endpoint: process.env.S3_ENDPOINT || undefined,
-          credentials: {
-            accessKeyId: process.env.S3_ACCESS_KEY_ID,
-            secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-            forcePathStyle: true,
-          },
-        });
+        const client = new S3Client(storageOptions());
         await client.send(
           new PutObjectCommand({
             Bucket: process.env.S3_BUCKET,
@@ -1641,22 +1669,11 @@ export function createApp(db, { production = false } = {}) {
   );
   app.use((error, req, res, next) => {
     if (res.headersSent) return next(error);
-    const status =
-      error instanceof z.ZodError
-        ? 400
-        : error.status || (error.code === "LIMIT_FILE_SIZE" ? 413 : 500);
-    if (status >= 500)
-      console.error("Request failed:", error.code || error.name);
-    res.status(status).json({
-      error:
-        error instanceof z.ZodError
-          ? error.issues
-              .map((i) => i.path.join(".") + ": " + i.message)
-              .join("; ")
-          : status >= 500 && !error.status
-            ? "The request could not be completed. Check the server configuration and try again."
-            : error.message,
-    });
+    const validation=error instanceof z.ZodError;
+    const detail=validation ? {status:400,message:error.issues.map(i=>i.path.join('.')+': '+i.message).join('; ')}
+      : error.code==='LIMIT_FILE_SIZE' ? {status:413,message:'Upload an image smaller than 5 MB.'} : describeError(error);
+    const logged=detail.status>=500?recordError(error,req):null;
+    res.status(detail.status).json({error:detail.message,...(logged?{reference:logged.id}:{})});
   });
   return app;
 }

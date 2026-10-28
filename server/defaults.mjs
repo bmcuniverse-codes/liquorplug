@@ -1,3 +1,4 @@
+import {socialNetworks,suppliedBanners,discoveryCards,recipeCards,whyBuyCards,footerBanners} from "../shared/storefront.mjs";
 export const lgas = [
   "Agege",
   "Ajeromi-Ifelodun",
@@ -148,3 +149,21 @@ export const defaults = {
       "Alcohol purchases are restricted to adults aged 18 and above. Product availability is subject to confirmation. Please drink responsibly. Update these terms with your legal business details before launch.",
   },
 };
+
+// Editable storefront enhancements. Existing saved settings are merged by content.mjs.
+Object.assign(defaults, {
+  socials:Object.fromEntries(socialNetworks.map(([key])=>[key,''])),
+  socialEnabled:Object.fromEntries(socialNetworks.map(([key])=>[key,true])),
+  socialPlacement:{top:true,bottom:true},
+  carousel:{autoplay:true,interval:6500},
+  discoveryCards,recipes:recipeCards,
+  whyBuyCards,footerBanners,whyBuyTitle:'Why buy from Liquor Plug NG?',whyBuyEnabled:true,
+  advertising:{enabled:true,title:'Your brand. Our kind of audience.',text:'Put your drinks brand, launch or promotion in front of people discovering their next favourite. Let’s talk about a feature on Liquor Plug.',button:'Advertise with us',href:'',image:'/media/banners/lords.png'},
+});
+defaults.banners.home=structuredClone(suppliedBanners);
+defaults.banners.promotions=structuredClone(suppliedBanners);
+defaults.sections.push(
+  {type:'discovery',title:'Good drinks start with a little discovery.',subtitle:'Vodka, whisky, sparkling favourites and a world of botanicals. Find your flavour.',visible:true},
+  {type:'recipes',title:'A little mixology. A lot of possibility.',subtitle:'Simple cocktails and an alcohol-free cooler to try at home. Adults only; enjoy responsibly.',visible:true},
+  {type:'advertise',title:'Advertise with Liquor Plug',subtitle:'Make your next brand moment a good one.',visible:true},
+);
